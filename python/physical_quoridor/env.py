@@ -73,7 +73,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         for row, column, is_vertical in zip(*np.where(np.array(observation[2]))):
             center_x = (column + 1) * 100
             center_y = (row + 1) * 100
-            width = 200
+            width = 220
             height = 20
 
             if is_vertical:

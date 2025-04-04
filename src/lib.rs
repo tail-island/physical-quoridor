@@ -182,7 +182,7 @@ impl PhysicalQuoridor {
         // フェンスを設置します。
 
         let handle = self.bodies.insert(RigidBodyBuilder::fixed().translation(vector![c as f32 - 3.5, (r as f32 - 3.5) * -1.0]).build());
-        self.colliders.insert_with_parent(ColliderBuilder::cuboid(1.0, 0.1).restitution(1.0).rotation(if is_vertical { PI / 2.0 } else { 0.0 }).build(), handle, &mut self.bodies);
+        self.colliders.insert_with_parent(ColliderBuilder::cuboid(1.1, 0.1).restitution(1.0).rotation(if is_vertical { PI / 2.0 } else { 0.0 }).build(), handle, &mut self.bodies);
     }
 
     pub fn step(&mut self, actions: [Action; 2]) -> ([Observation; 2], [f32; 2], [bool; 2]) {
