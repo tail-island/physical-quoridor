@@ -30,8 +30,8 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
         return (
             {
-                0: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2), dtype=np.int8), (10, 10)),
-                1: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2), dtype=np.int8), (10, 10))
+                0: (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10),
+                1: (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10)
             },
             {
                 0: {},
@@ -43,7 +43,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         actions = dict(zip(
             actions.keys(),
             map(
-                lambda action: (action[0], tuple(action[1].tolist()) if isinstance(action[1], np.ndarray) else tuple(action[1]), tuple(action[2])),
+                lambda action: (action[0], action[1].tolist() if isinstance(action[1], np.ndarray) else list(action[1]), tuple(action[2])),
                 actions.values()
             )
         ))
@@ -117,25 +117,55 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
     @lru_cache(maxsize=None)
     def action_space(self, agent):
         return gymnasium.spaces.Tuple((
-            gymnasium.spaces.Discrete(2),                               # 移動なら0、フェンス設置なら1
-            gymnasium.spaces.Box(-1, 1, shape=(2,), dtype=np.float32),  # 移動
-            gymnasium.spaces.Tuple((                                    # フェンスを設置
-                gymnasium.spaces.Discrete(8),                           # row
-                gymnasium.spaces.Discrete(8),                           # column
-                gymnasium.spaces.Discrete(2)                            # 館ならば1、そうでなければ0
+            gymnasium.spaces.Discrete(2),                                 # 移動なら0、フェンス設置なら1
+            gymnasium.spaces.Box(-1, 1, shape=[2], dtype=np.float32),     # 移動
+            gymnasium.spaces.Tuple((                                      # フェンス設置
+                gymnasium.spaces.Discrete(8),                             # row
+                gymnasium.spaces.Discrete(8),                             # column
+                gymnasium.spaces.Discrete(2)                              # 横なら0、縦なら1
             ))
         ))
 
     @lru_cache(maxsize=None)
     def observation_space(self, agent):
         return gymnasium.spaces.Tuple((
-            gymnasium.spaces.Box(-6, 6, shape=(2,), dtype=np.float32),  # 自分の駒の位置
-            gymnasium.spaces.Box(-3, 3, shape=(2,), dtype=np.float32),  # 自分の駒の速度
-            gymnasium.spaces.Box(-6, 6, shape=(2,), dtype=np.float32),  # 敵の駒の位置
-            gymnasium.spaces.Box(-3, 3, shape=(2,), dtype=np.float32),  # 敵の駒の速度
-            gymnasium.spaces.MultiBinary([8, 8, 2]),                    # フェンスの有無
-            gymnasium.spaces.Tuple((
-                gymnasium.spaces.Discrete(10),                          # 自分の残りフェンス数
-                gymnasium.spaces.Discrete(10)                           # 敵の残りフェンス数
-            ))
+            gymnasium.spaces.Box(-5, 5, shape=[2], dtype=np.float32),    # 自分の駒の位置
+            gymnasium.spaces.Box(-20, 20, shape=[2], dtype=np.float32),  # 自分の駒の速度
+            gymnasium.spaces.Box(-5, 5, shape=[2], dtype=np.float32),    # 敵の駒の位置
+            gymnasium.spaces.Box(-20, 20, shape=[2], dtype=np.float32),  # 敵の駒の速度
+            gymnasium.spaces.MultiBinary([8, 8, 2]),                     # フェンスの有無
+            gymnasium.spaces.Discrete(10),                               # 自分の残りフェンス数
+            gymnasium.spaces.Discrete(10)                                # 敵の残りフェンス数
         ))
+
+
+class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
+    def step(self, actions):
+        def convert_to_box(value, min_value, max_value):
+            return value * (max_value - min_value) + min_value
+
+        def convert_to_discrete(value, n):
+            return int(round(convert_to_box(value, 0 - 0.5, n - 0.5)))
+
+        return super().step(dict(zip(
+            actions.keys(),
+            map(
+                lambda action: (
+                    convert_to_discrete(action[0], 2),
+                    [
+                        convert_to_box(action[1], -1, 1),
+                        convert_to_box(action[2], -1, 1)
+                    ],
+                    (
+                        convert_to_discrete(action[3], 8),
+                        convert_to_discrete(action[4], 8),
+                        convert_to_discrete(action[5], 2),
+                    )
+                ),
+                actions.values()
+            )
+        )))
+
+    @lru_cache(maxsize=None)
+    def action_space(self, agent):
+        return gymnasium.spaces.Box(0, 1, shape=[6], dtype=np.float32)
