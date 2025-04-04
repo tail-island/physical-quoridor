@@ -20,19 +20,19 @@ for i in range(1_000):
     observations, _ = env.reset()
 
     observations, rewards, terminations, _, _ = env.step({
-        0: (0, [1.0, 0.0]),
-        1: (0, [1.0, 0.0])
+        0: (0, [1.0, 0.0], [0, 0, 0]),
+        1: (0, [1.0, 0.0], [0, 0, 0])
     })
 
     observations, rewards, terminations, _, _ = env.step({
-        0: (0, [1.0, 0.0]),
-        1: (0, [1.0, 0.0])
+        0: (0, [1.0, 0.0], [0, 0, 0]),
+        1: (0, [1.0, 0.0], [0, 0, 0])
     })
 
     while True:
         observations, rewards, terminations, _, _ = env.step({
-            0: (0, rng.uniform(-1, 1, 2)) if rng.random() > 0.5 else (1, (rng.integers(0, 8), rng.integers(0, 8), rng.integers(0, 2))),
-            1: (0, rng.uniform(-1, 1, 2)) if rng.random() > 0.5 else (1, (rng.integers(0, 8), rng.integers(0, 8), rng.integers(0, 2)))
+            0: (0, rng.uniform(-1, 1, 2), [0, 0, 0]) if rng.random() > 0.5 else (1, [0.0, 0.0], (rng.integers(0, 8), rng.integers(0, 8), rng.integers(0, 2))),
+            1: (0, rng.uniform(-1, 1, 2), [0, 0, 0]) if rng.random() > 0.5 else (1, [0.0, 0.0], (rng.integers(0, 8), rng.integers(0, 8), rng.integers(0, 2)))
         })
 
         if all(terminations.values()):

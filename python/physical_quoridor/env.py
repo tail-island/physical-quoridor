@@ -30,8 +30,8 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
         return (
             {
-                0: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2)).tolist(), (10, 10)),
-                1: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2)).tolist(), (10, 10))
+                0: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2), dtype=np.int8), (10, 10)),
+                1: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2), dtype=np.int8), (10, 10))
             },
             {
                 0: {},
@@ -43,13 +43,13 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         actions = dict(zip(
             actions.keys(),
             map(
-                lambda action: (action[0], tuple(action[1].tolist()) if isinstance(action[1], np.ndarray) else tuple(action[1])) if action[0] == 0 else action,
+                lambda action: (action[0], tuple(action[1].tolist()) if isinstance(action[1], np.ndarray) else tuple(action[1]), tuple(action[2])),
                 actions.values()
             )
         ))
 
         observations, rewards, terminations = self.physical_quoridor.step(list(map(
-            lambda i: (0, actions[i][1], (0, 0, 0)) if actions[i][0] == 0 else (1, (0.0, 0.0), actions[i][1]),
+            lambda i: actions[i],
             sorted(actions.keys())
         )))
 
@@ -116,7 +116,8 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
     @lru_cache(maxsize=None)
     def action_space(self, agent):
-        return gymnasium.spaces.OneOf((
+        return gymnasium.spaces.Tuple((
+            gymnasium.spaces.Discrete(2),                               # 移動なら0、フェンス設置なら1
             gymnasium.spaces.Box(-1, 1, shape=(2,), dtype=np.float32),  # 移動
             gymnasium.spaces.Tuple((                                    # フェンスを設置
                 gymnasium.spaces.Discrete(8),                           # row
