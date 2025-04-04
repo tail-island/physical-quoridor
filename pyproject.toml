@@ -1,0 +1,14 @@
+[project]
+name = "physical_quoridor"
+version = "0.1.0"
+dependencies = [
+    "pettingzoo"
+]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "python"

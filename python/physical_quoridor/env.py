@@ -1,0 +1,140 @@
+import cv2 as cv
+import gymnasium
+import numpy as np
+import pettingzoo
+import pygame
+
+from copy import copy
+from functools import lru_cache
+from .physical_quoridor import PhysicalQuoridor
+
+
+class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
+    metadata = {
+        "render_modes": ["human", "rgb_array"],
+        "name": "PhysicalQuoridor"
+    }
+
+    def __init__(self, render_mode=None):
+        super().__init__()
+
+        self.render_mode = render_mode
+        self.screen = None
+        self.surface = None
+
+        self.possible_agents = list(range(2))
+
+    def reset(self, seed=None, options=None):
+        self.agents = copy(self.possible_agents)
+        self.physical_quoridor = PhysicalQuoridor(seed if seed is not None else 1234)
+
+        return (
+            {
+                0: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2)).tolist(), (10, 10)),
+                1: ((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), (np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32)), np.zeros((8, 8, 2)).tolist(), (10, 10))
+            },
+            {
+                0: {},
+                1: {}
+            }
+        )
+
+    def step(self, actions):
+        actions = dict(zip(
+            actions.keys(),
+            map(
+                lambda action: (action[0], tuple(action[1].tolist()) if isinstance(action[1], np.ndarray) else tuple(action[1])) if action[0] == 0 else action,
+                actions.values()
+            )
+        ))
+
+        observations, rewards, terminations = self.physical_quoridor.step(list(map(
+            lambda i: (0, actions[i][1], (0, 0, 0)) if actions[i][0] == 0 else (1, (0.0, 0.0), actions[i][1]),
+            sorted(actions.keys())
+        )))
+
+        if any(terminations):
+            self.agents = []
+
+        if self.render_mode in {"human", "rgb_array"}:
+            self.render(observations[0])
+
+        return dict(enumerate(observations)), dict(enumerate(rewards)), dict(enumerate(terminations)), {0: False, 1: False}, {0: {}, 1: {}}
+
+    def get_board_image(self, observation):
+        result = np.zeros([900, 900, 3], dtype=np.uint8)
+
+        for i in range(1, 8 + 1):
+            cv.line(result, [i * 100, 0], [i * 100, 899], [128, 128, 128], 1)
+
+        for i in range(1, 8 + 1):
+            cv.line(result, [0, i * 100], [899, i * 100], [128, 128, 128], 1)
+
+        for row, column, is_vertical in zip(*np.where(np.array(observation[2]))):
+            center_x = (column + 1) * 100
+            center_y = (row + 1) * 100
+            width = 200
+            height = 20
+
+            if is_vertical:
+                width, height = height, width
+
+            cv.rectangle(result, (center_x - width // 2, center_y - height // 2), (center_x + width // 2, center_y + height // 2), (255, 255, 255), -1)
+
+        [pawn_0_x, pawn_0_y], _ = observation[0]
+        [pawn_1_x, pawn_1_y], _ = observation[1]
+
+        cv.circle(result, [int((pawn_0_x + 4.5) * 100), int((-pawn_0_y + 4.5) * 100)], 20, [255, 127, 127], -1)
+        cv.circle(result, [int((pawn_1_x + 4.5) * 100), int((-pawn_1_y + 4.5) * 100)], 20, [127, 127, 255], -1)
+
+        result = cv.cvtColor(result, cv.COLOR_BGR2RGB)
+
+        return result
+
+    def render(self, observation):
+        if self.render_mode not in {"human", "rgb_array"}:
+            gymnasium.logger.warn("Please set 'human' or 'rgb_array' to render_mode.")
+
+        image = self.get_board_image(observation)
+
+        if self.render_mode == "human":
+            if self.screen is None:
+                pygame.init()
+                pygame.display.set_caption("Physical Quoridor")
+
+                self.screen = pygame.display.set_mode((900, 900))
+                self.surface = pygame.surfarray.make_surface(image)
+
+            for event in pygame.event.get():
+                pass
+
+            pygame.surfarray.blit_array(self.surface, image.swapaxes(0, 1))
+            self.screen.blit(self.surface, [0, 0])
+            pygame.display.update()
+        else:
+            return image
+
+    @lru_cache(maxsize=None)
+    def action_space(self, agent):
+        return gymnasium.spaces.OneOf((
+            gymnasium.spaces.Box(-1, 1, shape=(2,), dtype=np.float32),  # 移動
+            gymnasium.spaces.Tuple((                                    # フェンスを設置
+                gymnasium.spaces.Discrete(8),                           # row
+                gymnasium.spaces.Discrete(8),                           # column
+                gymnasium.spaces.Discrete(2)                            # 館ならば1、そうでなければ0
+            ))
+        ))
+
+    @lru_cache(maxsize=None)
+    def observation_space(self, agent):
+        return gymnasium.spaces.Tuple((
+            gymnasium.spaces.Box(-6, 6, shape=(2,), dtype=np.float32),  # 自分の駒の位置
+            gymnasium.spaces.Box(-3, 3, shape=(2,), dtype=np.float32),  # 自分の駒の速度
+            gymnasium.spaces.Box(-6, 6, shape=(2,), dtype=np.float32),  # 敵の駒の位置
+            gymnasium.spaces.Box(-3, 3, shape=(2,), dtype=np.float32),  # 敵の駒の速度
+            gymnasium.spaces.MultiBinary([8, 8, 2]),                    # フェンスの有無
+            gymnasium.spaces.Tuple((
+                gymnasium.spaces.Discrete(10),                          # 自分の残りフェンス数
+                gymnasium.spaces.Discrete(10)                           # 敵の残りフェンス数
+            ))
+        ))

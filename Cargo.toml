@@ -1,0 +1,15 @@
+[package]
+name = "physical-quoridor"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "physical_quoridor"
+crate-type = ["cdylib"]
+
+[dependencies]
+getrandom = "0.3.2"
+pyo3 = "0.24.1"
+rand = "0.9.0"
+rand_distr = "0.5.1"
+rapier2d = "0.23.1"
