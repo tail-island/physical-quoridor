@@ -1,8 +1,14 @@
 from physical_quoridor import PhysicalQuoridorEnv_
-from ray import tune
+from pprint import pprint
+from ray import init
 from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.core.rl_module.default_model_config import DefaultModelConfig
+from ray.rllib.core.rl_module.multi_rl_module import MultiRLModuleSpec
+from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
+
+init()
 
 register_env(
     "physical-quoridor",
@@ -12,11 +18,23 @@ register_env(
 config = (
     PPOConfig()
     .environment("physical-quoridor", env_config={"n_pistons": 30})
-    .api_stack(enable_rl_module_and_learner=False, enable_env_runner_and_connector_v2=False)
+    .multi_agent(
+        policies={"0", "1"},
+        policy_mapping_fn=lambda agent, episode, **kwargs: str(agent)
+    )
+    .rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
+        "0": RLModuleSpec(
+            model_config=DefaultModelConfig(
+                fcnet_hiddens=[128, 256, 512, 256, 128]
+            )
+        ),
+        "1": RLModuleSpec()
+    }))
+    .env_runners(num_env_runners=2)
 )
 
-tune.run(
-    "PPO",
-    name="PPO",
-    config=config.to_dict()
-)
+algo = config.build_algo()
+
+for _ in range(1_000):
+    pprint(algo.train())
+    print()

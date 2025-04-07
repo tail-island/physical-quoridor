@@ -144,7 +144,7 @@ def convert_to_box(value, min_value, max_value):
 
 
 def convert_to_discrete(value, n):
-    return int(round(convert_to_box(value, 0 - 0.5, n - 0.5)))
+    return int(convert_to_box(value - 1e-9, 0, n))
 
 
 def normalize(value, min_value, max_value):
@@ -178,22 +178,25 @@ class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
         return dict(zip(
             observations.keys(),
             map(
-                lambda observation: [
-                    normalize(observation[0][0], -5, 5),
-                    normalize(observation[0][1], -5, 5),
-                    normalize(observation[1][0], -20, 20),
-                    normalize(observation[1][1], -20, 20),
+                lambda observation: np.array(
+                    [
+                        normalize(observation[0][0], -5, 5),
+                        normalize(observation[0][1], -5, 5),
+                        normalize(observation[1][0], -20, 20),
+                        normalize(observation[1][1], -20, 20),
 
-                    normalize(observation[2][0], -5, 5),
-                    normalize(observation[2][1], -5, 5),
-                    normalize(observation[3][0], -20, 20),
-                    normalize(observation[3][1], -20, 20),
+                        normalize(observation[2][0], -5, 5),
+                        normalize(observation[2][1], -5, 5),
+                        normalize(observation[3][0], -20, 20),
+                        normalize(observation[3][1], -20, 20),
 
-                    *np.asarray(np.ravel(observation[4]), np.float32),
+                        *np.asarray(np.ravel(observation[4]), np.float32),
 
-                    normalize(observation[5], 0, 10),
-                    normalize(observation[6], 0, 10)
-                ],
+                        normalize(observation[5], 0, 10),
+                        normalize(observation[6], 0, 10)
+                    ],
+                    dtype=np.float32
+                ),
                 observations.values()
             )
         ))
