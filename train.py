@@ -18,18 +18,27 @@ register_env(
 config = (
     PPOConfig()
     .environment("physical-quoridor", env_config={"n_pistons": 30})
-    .multi_agent(
-        policies={"0", "1"},
-        policy_mapping_fn=lambda agent, episode, **kwargs: str(agent)
-    )
-    .rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
-        "0": RLModuleSpec(
-            model_config=DefaultModelConfig(
-                fcnet_hiddens=[128, 256, 512, 256, 128]
+    # .multi_agent(
+    #     policies={"0", "1"},
+    #     policy_mapping_fn=lambda agent, episode, **kwargs: str(agent)
+    # )
+    # .rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
+    #     "0": RLModuleSpec(
+    #         model_config=DefaultModelConfig(
+    #             fcnet_hiddens=[128, 256, 512, 256, 128]
+    #         )
+    #     ),
+    #     "1": RLModuleSpec()
+    # }))
+    .rl_module(
+        rl_module_spec=MultiRLModuleSpec(
+            rl_module_specs=RLModuleSpec(
+                model_config=DefaultModelConfig(
+                    fcnet_hiddens=[128, 256, 512, 256, 128]
+                )
             )
-        ),
-        "1": RLModuleSpec()
-    }))
+        )
+    )
     .env_runners(num_env_runners=2)
 )
 
