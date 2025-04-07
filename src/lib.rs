@@ -12,7 +12,7 @@ pub enum Action {
     SetFence(i32, i32, bool)
 }
 
-type Observation = (([f32; 2], [f32; 2]), ([f32; 2], [f32; 2]), [[[bool; 2]; 8]; 8], (i32, i32));
+type Observation = ([f32; 2], [f32; 2], [f32; 2], [f32; 2], [[[bool; 2]; 8]; 8], i32, i32);
 
 pub struct PhysicalQuoridor {
     // ゲーム用の属性。
@@ -265,17 +265,15 @@ impl PhysicalQuoridor {
         (
             [
                 (
-                    ([ pawn_0.translation().x,  pawn_0.translation().y], [ pawn_0.linvel().x,  pawn_0.linvel().y]),
-                    ([ pawn_1.translation().x,  pawn_1.translation().y], [ pawn_1.linvel().x,  pawn_1.linvel().y]),
+                    [ pawn_0.translation().x,  pawn_0.translation().y], [ pawn_0.linvel().x,  pawn_0.linvel().y],
+                    [ pawn_1.translation().x,  pawn_1.translation().y], [ pawn_1.linvel().x,  pawn_1.linvel().y],
                     self.fences,
-                    (
-                        self.remained_fences[0],
-                        self.remained_fences[1]
-                    )
+                    self.remained_fences[0],
+                    self.remained_fences[1]
                 ),
                 (
-                    ([-pawn_1.translation().x, -pawn_1.translation().y], [-pawn_1.linvel().x, -pawn_1.linvel().y]),  // 同じプログラムがplayer 1も担当できるように、観測結果を反転します。
-                    ([-pawn_0.translation().x, -pawn_0.translation().y], [-pawn_0.linvel().x, -pawn_0.linvel().y]),
+                    [-pawn_1.translation().x, -pawn_1.translation().y], [-pawn_1.linvel().x, -pawn_1.linvel().y],  // 同じプログラムがplayer 1も担当できるように、観測結果を反転します。
+                    [-pawn_0.translation().x, -pawn_0.translation().y], [-pawn_0.linvel().x, -pawn_0.linvel().y],
                     {
                         let mut result = [[[false; 2]; 8]; 8];
 
@@ -289,10 +287,8 @@ impl PhysicalQuoridor {
 
                         result
                     },
-                    (
-                        self.remained_fences[1],
-                        self.remained_fences[0]
-                    )
+                    self.remained_fences[1],
+                    self.remained_fences[0]
                 )
             ],
             rewards,

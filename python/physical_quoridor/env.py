@@ -70,7 +70,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         for i in range(1, 8 + 1):
             cv.line(result, [0, i * 100], [899, i * 100], [128, 128, 128], 1)
 
-        for row, column, is_vertical in zip(*np.where(np.array(observation[2]))):
+        for row, column, is_vertical in zip(*np.where(np.array(observation[4]))):
             center_x = (column + 1) * 100
             center_y = (row + 1) * 100
             width = 220
@@ -81,8 +81,8 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
             cv.rectangle(result, (center_x - width // 2, center_y - height // 2), (center_x + width // 2, center_y + height // 2), (255, 255, 255), -1)
 
-        [pawn_0_x, pawn_0_y], _ = observation[0]
-        [pawn_1_x, pawn_1_y], _ = observation[1]
+        [pawn_0_x, pawn_0_y] = observation[0]
+        [pawn_1_x, pawn_1_y] = observation[2]
 
         cv.circle(result, [int((pawn_0_x + 4.5) * 100), int((-pawn_0_y + 4.5) * 100)], 20, [255, 127, 127], -1)
         cv.circle(result, [int((pawn_1_x + 4.5) * 100), int((-pawn_1_y + 4.5) * 100)], 20, [127, 127, 255], -1)
@@ -134,20 +134,27 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
             gymnasium.spaces.Box(-5, 5, shape=[2], dtype=np.float32),    # 敵の駒の位置
             gymnasium.spaces.Box(-20, 20, shape=[2], dtype=np.float32),  # 敵の駒の速度
             gymnasium.spaces.MultiBinary([8, 8, 2]),                     # フェンスの有無
-            gymnasium.spaces.Discrete(10),                               # 自分の残りフェンス数
-            gymnasium.spaces.Discrete(10)                                # 敵の残りフェンス数
+            gymnasium.spaces.Discrete(11),                               # 自分の残りフェンス数
+            gymnasium.spaces.Discrete(11)                                # 敵の残りフェンス数
         ))
 
 
+def convert_to_box(value, min_value, max_value):
+    return value * (max_value - min_value) + min_value
+
+
+def convert_to_discrete(value, n):
+    return int(round(convert_to_box(value, 0 - 0.5, n - 0.5)))
+
+
+def normalize(value, min_value, max_value):
+    return (value - min_value) / (max_value - min_value)
+
+
 class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
-    def step(self, actions):
-        def convert_to_box(value, min_value, max_value):
-            return value * (max_value - min_value) + min_value
-
-        def convert_to_discrete(value, n):
-            return int(round(convert_to_box(value, 0 - 0.5, n - 0.5)))
-
-        return super().step(dict(zip(
+    @classmethod
+    def convert_actions(cls, actions):
+        return dict(zip(
             actions.keys(),
             map(
                 lambda action: (
@@ -164,8 +171,47 @@ class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
                 ),
                 actions.values()
             )
-        )))
+        ))
+
+    @classmethod
+    def convert_observations(cls, observations):
+        return dict(zip(
+            observations.keys(),
+            map(
+                lambda observation: [
+                    normalize(observation[0][0], -5, 5),
+                    normalize(observation[0][1], -5, 5),
+                    normalize(observation[1][0], -20, 20),
+                    normalize(observation[1][1], -20, 20),
+
+                    normalize(observation[2][0], -5, 5),
+                    normalize(observation[2][1], -5, 5),
+                    normalize(observation[3][0], -20, 20),
+                    normalize(observation[3][1], -20, 20),
+
+                    *np.asarray(np.ravel(observation[4]), np.float32),
+
+                    normalize(observation[5], 0, 10),
+                    normalize(observation[6], 0, 10)
+                ],
+                observations.values()
+            )
+        ))
+
+    def reset(self, seed=None, options=None):
+        observations, infos = super().reset(seed=seed, options=options)
+
+        return self.convert_observations(observations), infos
+
+    def step(self, actions):
+        observations, rewards, terminations, truncations, infos = super().step(self.convert_actions(actions))
+
+        return self.convert_observations(observations), rewards, terminations, truncations, infos
 
     @lru_cache(maxsize=None)
     def action_space(self, agent):
         return gymnasium.spaces.Box(0, 1, shape=[6], dtype=np.float32)
+
+    @lru_cache(maxsize=None)
+    def observation_space(self, agent):
+        return gymnasium.spaces.Box(0, 1, [2 + 2 + 2 + 2 + 8 * 8 * 2 + 1 + 1], dtype=np.float32)
