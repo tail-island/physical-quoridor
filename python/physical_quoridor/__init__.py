@@ -1,7 +1,6 @@
-from .env import PhysicalQuoridorEnv, PhysicalQuoridorEnv_
+from .env import PhysicalQuoridorEnv
 
 
 __all__ = [
-    "PhysicalQuoridorEnv",
-    "PhysicalQuoridorEnv_"
+    "PhysicalQuoridorEnv"
 ]
