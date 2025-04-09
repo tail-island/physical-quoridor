@@ -44,98 +44,86 @@
 #     sleep(3)
 
 
-import numpy as np
+# import numpy as np
 
-from physical_quoridor import PhysicalQuoridorEnv_
-from time import sleep
-
-
-env = PhysicalQuoridorEnv_(render_mode="human")
-
-for i in range(1_000):
-    print(i)
-    rng = np.random.default_rng(i)
-    observations, _ = env.reset()
-
-    observations, rewards, terminations, _, _ = env.step({
-        0: (0, 1.0, 0.0, 0, 0, 0),
-        1: (0, 1.0, 0.0, 0, 0, 0)
-    })
-
-    observations, rewards, terminations, _, _ = env.step({
-        0: (0, 1.0, 0.0, 0, 0, 0),
-        1: (0, 1.0, 0.0, 0, 0, 0)
-    })
-
-    while True:
-        observations, rewards, terminations, _, _ = env.step({
-            0: rng.uniform(0, 1, 6),
-            1: rng.uniform(0, 1, 6)
-        })
-
-        if all(terminations.values()):
-            print(rewards)
-            break
-
-        sleep(0.1)
-
-    sleep(3)
-
-
-# from physical_quoridor import PhysicalQuoridorEnv
+# from physical_quoridor import PhysicalQuoridorEnv_
 # from time import sleep
 
 
-# env = PhysicalQuoridorEnv(render_mode="human")
-# observations, _ = env.reset()
+# env = PhysicalQuoridorEnv_(render_mode="human")
 
-# for i in range(1_000_000):
-#     match i:
-#         case 0:
-#             observations, rewards, terminations, _, _ = env.step({
-#                 0: (1, (3, 5, 1)),
-#                 1: (1, (3, 3, 1))
-#             })
+# for i in range(1_000):
+#     print(i)
+#     rng = np.random.default_rng(i)
+#     observations, _ = env.reset()
 
-#         case 1:
-#             observations, rewards, terminations, _, _ = env.step({
-#                 0: (1, (2, 6, 0)),
-#                 1: (1, (2, 4, 0))
-#             })
+#     observations, rewards, terminations, _, _ = env.step({
+#         0: (0, 1.0, 0.0, 0, 0, 0),
+#         1: (0, 1.0, 0.0, 0, 0, 0)
+#     })
 
-#         case 2:
-#             observations, rewards, terminations, _, _ = env.step({
-#                 0: (1, (4, 6, 0)),
-#                 1: (1, (2, 4, 0))
-#             })
+#     observations, rewards, terminations, _, _ = env.step({
+#         0: (0, 1.0, 0.0, 0, 0, 0),
+#         1: (0, 1.0, 0.0, 0, 0, 0)
+#     })
 
-#         case 10:
-#             observations, rewards, terminations, _, _ = env.step({
-#                 0: (1, (3, 7, 1)),
-#                 1: (1, (2, 4, 0))
-#             })
+#     while True:
+#         observations, rewards, terminations, _, _ = env.step({
+#             0: rng.uniform(0, 1, 6),
+#             1: rng.uniform(0, 1, 6)
+#         })
 
-#         case _:
-#             forces = [None, None]
+#         if all(terminations.values()):
+#             print(rewards)
+#             break
 
-#             for i in range(2):
-#                 match observations[i][0][0][0]:
-#                     case x if x < -0.5:
-#                         forces[i] = (1.0, -0.1)
-#                     case x if x < 0.5:
-#                         forces[i] = (0.1, 0.1)
-#                     case _:
-#                         forces[i] = (0.1, -0.3)
+#         sleep(0.1)
 
-#             observations, rewards, terminations, _, _ = env.step({
-#                 0: (0, forces[0]),
-#                 1: (0, forces[1])
-#             })
+#     sleep(3)
 
-#     if all(terminations.values()):
-#         print(rewards)
-#         break
 
-#     sleep(0.1)
+from physical_quoridor import PhysicalQuoridorEnv
+from time import sleep
 
-# sleep(3)
+
+env = PhysicalQuoridorEnv(render_mode="human")
+observations, _ = env.reset()
+
+for i in range(1_000_000):
+    match i:
+        case 0:
+            observations, rewards, terminations, _, _ = env.step({
+                0: (1, [0, 0], (3, 3, 1)),
+                1: (1, [0, 0], (3, 3, 1))
+            })
+
+        case 1:
+            observations, rewards, terminations, _, _ = env.step({
+                0: (1, [0, 0], (2, 4, 0)),
+                1: (1, [0, 0], (2, 4, 0))
+            })
+
+        case _:
+            forces = [None, None]
+
+            for i in range(2):
+                match observations[i][0][0]:
+                    case x if x < -0.5:
+                        forces[i] = (1.0, -0.1)
+                    case x if x < 0.5:
+                        forces[i] = (0.1, 0.5)
+                    case _:
+                        forces[i] = (1.0, -0.1)
+
+            observations, rewards, terminations, _, _ = env.step({
+                0: (0, forces[0], (0, 0, 0)),
+                1: (0, forces[1], (0, 0, 0))
+            })
+
+    if all(terminations.values()):
+        print(rewards)
+        break
+
+    sleep(0.1)
+
+sleep(3)
