@@ -22,7 +22,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         self.screen = None
         self.surface = None
 
-        self.possible_agents = list(range(2))
+        self.possible_agents = ["player-0", "player-1"]
 
     def reset(self, seed=None, options=None):
         self.agents = copy(self.possible_agents)
@@ -30,12 +30,12 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
         return (
             {
-                0: (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10),
-                1: (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10)
+                "player-0": (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10),
+                "player-1": (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10)
             },
             {
-                0: {},
-                1: {}
+                "player-0": {},
+                "player-1": {}
             }
         )
 
@@ -49,17 +49,14 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         ))
 
         observations, rewards, terminations = self.physical_quoridor.step(list(map(
-            lambda i: actions[i],
+            lambda key: actions[key],
             sorted(actions.keys())
         )))
-
-        if any(terminations):
-            self.agents = []
 
         if self.render_mode in {"human", "rgb_array"}:
             self.render(observations[0])
 
-        return dict(enumerate(observations)), dict(enumerate(rewards)), dict(enumerate(terminations)), {0: False, 1: False}, {0: {}, 1: {}}
+        return dict(zip(self.agents, observations)), dict(zip(self.agents, rewards)), dict(zip(self.agents, terminations)), {"player-0": False, "player-1": False}, {"player-0": {}, "player-1": {}}
 
     def get_board_image(self, observation):
         result = np.zeros([900, 900, 3], dtype=np.uint8)

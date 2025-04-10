@@ -89,35 +89,35 @@ from time import sleep
 env = PhysicalQuoridorEnv(render_mode="human")
 observations, _ = env.reset()
 
-for i in range(1_000_000):
-    match i:
+for agent in range(1_000_000):
+    match agent:
         case 0:
             observations, rewards, terminations, _, _ = env.step({
-                0: (1, [0, 0], (3, 3, 1)),
-                1: (1, [0, 0], (3, 3, 1))
+                "player-0": (1, [0, 0], (3, 3, 1)),
+                "player-1": (1, [0, 0], (3, 3, 1))
             })
 
         case 1:
             observations, rewards, terminations, _, _ = env.step({
-                0: (1, [0, 0], (2, 4, 0)),
-                1: (1, [0, 0], (2, 4, 0))
+                "player-0": (1, [0, 0], (2, 4, 0)),
+                "player-1": (1, [0, 0], (2, 4, 0))
             })
 
         case _:
-            forces = [None, None]
+            forces = {}
 
-            for i in range(2):
-                match observations[i][0][0]:
+            for agent in env.agents:
+                match observations[agent][0][0]:
                     case x if x < -0.5:
-                        forces[i] = (1.0, -0.1)
+                        forces[agent] = (1.0, -0.1)
                     case x if x < 0.5:
-                        forces[i] = (0.1, 0.5)
+                        forces[agent] = (0.1, 0.5)
                     case _:
-                        forces[i] = (1.0, -0.1)
+                        forces[agent] = (1.0, -0.1)
 
             observations, rewards, terminations, _, _ = env.step({
-                0: (0, forces[0], (0, 0, 0)),
-                1: (0, forces[1], (0, 0, 0))
+                "player-0": (0, forces["player-0"], (0, 0, 0)),
+                "player-1": (0, forces["player-1"], (0, 0, 0))
             })
 
     if all(terminations.values()):
