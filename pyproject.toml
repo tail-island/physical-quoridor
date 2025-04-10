@@ -2,7 +2,10 @@
 name = "physical_quoridor"
 version = "0.1.0"
 dependencies = [
-    "pettingzoo"
+    "funcy",
+    "opencv-python",
+    "pettingzoo",
+    "pygame"
 ]
 
 [build-system]

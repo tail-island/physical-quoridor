@@ -36,18 +36,6 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
                 repeat({}, len(self.agents))
             )
         )
-        #     dict(zip(
-        #         self.agents,
-        #         repeat(
-        #             (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10),
-        #             len(self.agents)
-        #         )
-        #     )),
-        #     dict(zip(
-        #         self.agents,
-        #         repeat({}, len(self.agents))
-        #     ))
-        # )
 
     def step(self, actions):
         actions = dict(zip(
