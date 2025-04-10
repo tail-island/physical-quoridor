@@ -125,12 +125,12 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
     @lru_cache(maxsize=None)
     def action_space(self, agent):
         return gymnasium.spaces.Tuple((
-            gymnasium.spaces.Discrete(2),                                 # 移動なら0、フェンス設置なら1
-            gymnasium.spaces.Box(-1, 1, shape=[2], dtype=np.float32),     # 移動
-            gymnasium.spaces.Tuple((                                      # フェンス設置
-                gymnasium.spaces.Discrete(8),                             # row
-                gymnasium.spaces.Discrete(8),                             # column
-                gymnasium.spaces.Discrete(2)                              # 横なら0、縦なら1
+            gymnasium.spaces.Discrete(2),                                # 移動なら0、フェンス設置なら1
+            gymnasium.spaces.Box(-1, 1, shape=[2], dtype=np.float32),    # 移動
+            gymnasium.spaces.Tuple((                                     # フェンス設置
+                gymnasium.spaces.Discrete(8),                            # row
+                gymnasium.spaces.Discrete(8),                            # column
+                gymnasium.spaces.Discrete(2)                             # 横なら0、縦なら1
             ))
         ))
 
