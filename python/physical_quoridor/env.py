@@ -6,6 +6,7 @@ import pygame
 
 from copy import copy
 from functools import lru_cache
+from funcy import repeat
 from .physical_quoridor import PhysicalQuoridor
 
 
@@ -28,16 +29,25 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         self.agents = copy(self.possible_agents)
         self.physical_quoridor = PhysicalQuoridor(seed if seed is not None else 1234)
 
-        return (
-            {
-                "player-0": (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10),
-                "player-1": (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10)
-            },
-            {
-                "player-0": {},
-                "player-1": {}
-            }
+        return map(
+            lambda values: dict(zip(self.agents, values)),
+            (
+                repeat((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10), len(self.agents)),
+                repeat({}, len(self.agents))
+            )
         )
+        #     dict(zip(
+        #         self.agents,
+        #         repeat(
+        #             (np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10),
+        #             len(self.agents)
+        #         )
+        #     )),
+        #     dict(zip(
+        #         self.agents,
+        #         repeat({}, len(self.agents))
+        #     ))
+        # )
 
     def step(self, actions):
         actions = dict(zip(
@@ -47,16 +57,29 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
                 actions.values()
             )
         ))
+        action_agents = list(sorted(actions.keys()))
 
         observations, rewards, terminations = self.physical_quoridor.step(list(map(
-            lambda key: actions[key],
-            sorted(actions.keys())
+            lambda action_agent: actions[action_agent],
+            action_agents
         )))
 
         if self.render_mode in {"human", "rgb_array"}:
             self.render(observations[0])
 
-        return dict(zip(self.agents, observations)), dict(zip(self.agents, rewards)), dict(zip(self.agents, terminations)), {"player-0": False, "player-1": False}, {"player-0": {}, "player-1": {}}
+        if any(terminations):
+            self.agents = []
+
+        return map(
+            lambda values: dict(zip(action_agents, values)),
+            (
+                observations,
+                rewards,
+                terminations,
+                repeat(False, len(action_agents)),
+                repeat({}, len(action_agents))
+            )
+        )
 
     def get_board_image(self, observation):
         result = np.zeros([900, 900, 3], dtype=np.uint8)
