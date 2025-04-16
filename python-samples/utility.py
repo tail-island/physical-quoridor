@@ -8,13 +8,13 @@ def get_shortest_path(observation):
     # セルの間まで含めた、17×17のマップを使用して、A*アルゴリズムで最短の経路を求めます。
 
     # 17×17のマップの中での、現在位置を取得します。
-    def get_position(observation):
+    def get_position():
         x, y = observation[0]
 
-        return int(round(-y + 4) * 2), int(round(x + 4) * 2)  # y座標と行は向きが異なるので符号反転し、原点の位置が異なるので調整しています。また、セルの間に壁があるので、2倍します。
+        return int(round(-y + 4) * 2), int(round(x + 4) * 2)  # y座標と行は向きが異なるので符号反転し、原点の位置が異なるので調整しています。また、セルの間に壁があるので、2倍しておきます。
 
     # 17×17のマップの中での、フェンスの設置状況を取得します。
-    def get_fences(observation):
+    def get_fences():
         result = np.zeros((17, 17), dtype=np.int8)
 
         for row, column, is_vertical in zip(*np.where(observation[4])):
@@ -24,7 +24,8 @@ def get_shortest_path(observation):
         return result
 
     # 現在位置とマップを取得します。
-    position, fences = map(lambda f: f(observation), [get_position, get_fences])
+    position = get_position()
+    fences = get_fences()
 
     # A*アルゴリズムに必要な、プライオリティ・キュー（Pythonではheqpqを使用するのでリスト）と探索済みの位置を保存するセットを作成します。
     heap = [(0, (position,))]

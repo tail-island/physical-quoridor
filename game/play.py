@@ -59,7 +59,10 @@ class Game:
 
     async def terminate(self):
         for player in self.players.values():
-            await player.end_game()
+            try:
+                await player.end_game()
+            except Exception:
+                pass
 
     async def play(self):
         env = PhysicalQuoridorEnv(render_mode="human")
@@ -79,7 +82,7 @@ class Game:
                     return dict(map(lambda key: (key, 1.0 if key != name else -1.0), self.players.keys()))
 
                 except Exception:
-                    print("f{name}: something wring...")
+                    print(f"{name}: something wring...")
 
                     await self.terminate()
                     return dict(map(lambda key: (key, 1.0 if key != name else -1.0), self.players.keys()))

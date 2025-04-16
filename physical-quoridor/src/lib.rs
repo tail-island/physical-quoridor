@@ -229,8 +229,8 @@ impl PhysicalQuoridor {
                 let (rewards, termination) = match (
                     pawn_0.translation().x >  4.3,
                     pawn_1.translation().x < -4.3,
-                    (pawn_0.translation().x < -4.5 || pawn_0.translation().y > 4.5 || pawn_0.translation().y < -4.5),
-                    (pawn_1.translation().x >  4.5 || pawn_1.translation().y > 4.5 || pawn_1.translation().y < -4.5)
+                    pawn_0.translation().x < -4.5 || pawn_0.translation().y > 4.5 || pawn_0.translation().y < -4.5,
+                    pawn_1.translation().x >  4.5 || pawn_1.translation().y > 4.5 || pawn_1.translation().y < -4.5
                 ) {
                     (_,     _,     true,  true ) => ([-0.5, -0.5], true ),
                     (_,     _,     true,  false) => ([-1.0,  1.0], true ),
