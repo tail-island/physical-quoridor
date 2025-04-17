@@ -7,6 +7,7 @@ import pygame
 from copy import copy
 from functools import lru_cache
 from funcy import repeat
+from itertools import starmap
 from .physical_quoridor import PhysicalQuoridor
 
 
@@ -88,12 +89,12 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         pygame.display.update()
 
     def step(self, actions):
-        actions = dict(zip(
-            actions.keys(),
-            map(
-                lambda action: (action[0], action[1].tolist() if isinstance(action[1], np.ndarray) else list(action[1]), tuple(action[2])),
-                actions.values()
-            )
+        actions = dict(starmap(
+            lambda agent, action: (
+                agent,
+                (action[0], action[1].tolist() if isinstance(action[1], np.ndarray) else list(action[1]), tuple(action[2]))
+            ),
+            actions.items()
         ))
         action_agents = list(sorted(actions.keys()))
 
