@@ -27,8 +27,8 @@ config = (
     .multi_agent(
         policy_mapping_fn=lambda agent, episode, **kwargs: rng.choice("policy-0", "policy-1"),
         algorithm_config_overrides_per_module={
-            "policy-0": PPOConfig.overrides(gamme=0.995),
-            "policy-1": PPOConfig.overrides(gamme=0.9)
+            "policy-0": PPOConfig.overrides(gamma=0.995),
+            "policy-1": PPOConfig.overrides(gamma=0.9)
         }
     )
     .rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
