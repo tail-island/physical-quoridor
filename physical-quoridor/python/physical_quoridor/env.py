@@ -153,5 +153,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
             gymnasium.spaces.Box(-20, 20, shape=[2], dtype=np.float32),  # 敵の駒の速度
             gymnasium.spaces.MultiBinary([8, 8, 2]),                     # フェンスの有無
             gymnasium.spaces.Discrete(11),                               # 自分の残りフェンス数
-            gymnasium.spaces.Discrete(11)                                # 敵の残りフェンス数
+            gymnasium.spaces.Discrete(11),                               # 敵の残りフェンス数
+            gymnasium.spaces.Discrete(11),                               # 自分が次にフェンスを設置できるようになるまでの時間
+            gymnasium.spaces.Discrete(11)                                # 敵が次にフェンスを設置できるようになるまでの時間
         ))

@@ -12,7 +12,7 @@ pub enum Action {
     SetFence(i32, i32, bool)
 }
 
-type Observation = ([f32; 2], [f32; 2], [f32; 2], [f32; 2], [[[bool; 2]; 8]; 8], i32, i32);
+type Observation = ([f32; 2], [f32; 2], [f32; 2], [f32; 2], [[[bool; 2]; 8]; 8], i32, i32, i32, i32);
 
 pub struct PhysicalQuoridor {
     // ゲーム用の属性。
@@ -20,6 +20,7 @@ pub struct PhysicalQuoridor {
     tick: i32,
     pawn_handles: [RigidBodyHandle; 2],
     remained_fences: [i32; 2],
+    can_fence_after: [i32; 2],
     fences: [[[bool; 2]; 8]; 8],
 
     // rapier2d用の属性。
@@ -53,6 +54,7 @@ impl PhysicalQuoridor {
             tick: 0,
             pawn_handles,
             remained_fences: [10, 10],
+            can_fence_after: [0, 0],
             fences: [[[false; 2]; 8]; 8],
 
             physics_pipeline: PhysicsPipeline::new(),
@@ -138,9 +140,9 @@ impl PhysicalQuoridor {
     }
 
     fn set_fence(&mut self, player_index: usize, r: i32, c: i32, is_vertical: bool) {
-        // 設置可能なフェンスは10枚まで。
+        // 設置可能なフェンスは10枚まで。フェンス設置は、前のフェンス設置の後1秒たってから。
 
-        if self.remained_fences[player_index] == 0 {
+        if self.remained_fences[player_index] == 0 || self.can_fence_after[player_index] > 0 {
             return;
         }
 
@@ -179,7 +181,11 @@ impl PhysicalQuoridor {
 
         self.remained_fences[player_index] -= 1;
 
-        // フェンスを設置します。
+        // 次のフェンス設置は1秒後。
+
+        self.can_fence_after[player_index] = FRAME_RATE;
+
+        // 物理エンジン上にフェンスを設置します。
 
         let handle = self.bodies.insert(RigidBodyBuilder::fixed().translation(vector![c as f32 - 3.5, (r as f32 - 3.5) * -1.0]).build());
         self.colliders.insert_with_parent(ColliderBuilder::cuboid(1.1, 0.1).restitution(1.0).rotation(if is_vertical { PI / 2.0 } else { 0.0 }).build(), handle, &mut self.bodies);
@@ -257,19 +263,21 @@ impl PhysicalQuoridor {
             termination = true;
         }
 
-        // 観測結果と報酬、終了判定をリターンします。
+        // 観測結果と報酬、終了判定を作成します。
 
         let pawn_0 = &self.bodies[self.pawn_handles[0]];
         let pawn_1 = &self.bodies[self.pawn_handles[1]];
 
-        (
+        let result = (
             [
                 (
                     [ pawn_0.translation().x,  pawn_0.translation().y], [ pawn_0.linvel().x,  pawn_0.linvel().y],
                     [ pawn_1.translation().x,  pawn_1.translation().y], [ pawn_1.linvel().x,  pawn_1.linvel().y],
                     self.fences,
                     self.remained_fences[0],
-                    self.remained_fences[1]
+                    self.remained_fences[1],
+                    self.can_fence_after[0],
+                    self.can_fence_after[1]
                 ),
                 (
                     [-pawn_1.translation().x, -pawn_1.translation().y], [-pawn_1.linvel().x, -pawn_1.linvel().y],  // 同じプログラムがplayer 1も担当できるように、観測結果を反転します。
@@ -288,11 +296,19 @@ impl PhysicalQuoridor {
                         result
                     },
                     self.remained_fences[1],
-                    self.remained_fences[0]
+                    self.remained_fences[0],
+                    self.can_fence_after[1],
+                    self.can_fence_after[0]
                 )
             ],
             rewards,
             [termination, termination]
-        )
+        );
+
+        for i in 0..2 {
+            self.can_fence_after[i] -= 1;
+        }
+
+        result
     }
 }

@@ -22,7 +22,7 @@ for agent in range(1_000_000):
                 "player-1": (1, [0, 0], (3, 3, 1))
             })
 
-        case 1:
+        case 10:
             observations, rewards, terminations, _, _ = env.step({
                 "player-0": (1, [0, 0], (2, 4, 0)),
                 "player-1": (1, [0, 0], (2, 4, 0))
