@@ -18,27 +18,28 @@ init()
 
 register_env(
     "physical_quoridor",
-    lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_(render_mode="human")),
+    lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_()),
 )
 
 config = (
     PPOConfig()
     .environment("physical_quoridor")
     .multi_agent(
-        policy_mapping_fn=lambda agent, episode, **kwargs: rng.choice("policy-0", "policy-1"),
+        policies={"policy_0", "policy_1"},
+        policy_mapping_fn=lambda agent, episode, **kwargs: rng.choice(["policy_0", "policy_1"]),
         algorithm_config_overrides_per_module={
-            "policy-0": PPOConfig.overrides(gamma=0.995),
-            "policy-1": PPOConfig.overrides(gamma=0.9)
+            "policy_0": PPOConfig.overrides(gamma=0.995),
+            "policy_1": PPOConfig.overrides(gamma=0.9)
         }
     )
     .rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
-        "policy-0": RLModuleSpec(
+        "policy_0": RLModuleSpec(
             model_config=DefaultModelConfig(
                 fcnet_hiddens=[512, 512, 512, 512],
                 fcnet_activation="relu"
             )
         ),
-        "policy-1": RLModuleSpec(
+        "policy_1": RLModuleSpec(
             model_config=DefaultModelConfig(
                 fcnet_hiddens=[512, 512, 512, 512],
                 fcnet_activation="relu"

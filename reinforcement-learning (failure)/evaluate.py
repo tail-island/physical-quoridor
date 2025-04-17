@@ -1,11 +1,12 @@
 import numpy as np
 import torch
 
+from env import PhysicalQuoridorEnv_, convert_to_box, convert_to_discrete
+from funcy import first
 from pathlib import Path
 from pyarrow.fs import LocalFileSystem
 from ray.rllib.core.rl_module import RLModule
 from time import sleep
-from env import PhysicalQuoridorEnv_, convert_to_box, convert_to_discrete
 
 
 def get_action(env, observation, rl_module):
@@ -18,7 +19,7 @@ def get_action(env, observation, rl_module):
     )
 
 
-checkpoint_paths = list(sorted(
+checkpoint_path = first(sorted(
     filter(
         lambda path: path.is_dir(),
         (Path(".") / "checkpoints").glob("*")
@@ -26,8 +27,8 @@ checkpoint_paths = list(sorted(
     reverse=True
 ))
 rl_modules = {
-    "player-0": RLModule.from_checkpoint(checkpoint_paths[0] / "learner_group" / "learner" / "rl_module" / "policy_0", filesystem=LocalFileSystem()),
-    "player-1": RLModule.from_checkpoint(checkpoint_paths[len(checkpoint_paths) // 2] / "learner_group" / "learner" / "rl_module" / "policy_0", filesystem=LocalFileSystem())
+    "player-0": RLModule.from_checkpoint(checkpoint_path / "learner_group" / "learner" / "rl_module" / "policy_0", filesystem=LocalFileSystem()),
+    "player-1": RLModule.from_checkpoint(checkpoint_path / "learner_group" / "learner" / "rl_module" / "policy_1", filesystem=LocalFileSystem())
 }
 
 env = PhysicalQuoridorEnv_(render_mode="human")
