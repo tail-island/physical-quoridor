@@ -45,6 +45,8 @@ for agent in range(1_000_000):
                 "player-1": (0, forces["player-1"], (0, 0, 0))
             })
 
+    print(observations["player-0"][7:])
+
     if all(terminations.values()):
         print(rewards)
         break

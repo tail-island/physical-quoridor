@@ -110,7 +110,9 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
                 np.array(observation[3], dtype=np.float32),
                 np.array(observation[4], dtype=np.int8),
                 observation[5],
-                observation[6]
+                observation[6],
+                observation[7],
+                observation[8]
             ),
             observations
         ))

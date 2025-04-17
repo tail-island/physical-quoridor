@@ -263,12 +263,20 @@ impl PhysicalQuoridor {
             termination = true;
         }
 
-        // 観測結果と報酬、終了判定を作成します。
+        // フェンス設置可能になるまでの時間を減らします。
+
+        for i in 0..2 {
+            if self.can_fence_after[i] > 0 {
+                self.can_fence_after[i] -= 1;
+            }
+        }
+
+        // 観測結果と報酬、終了判定をリターンします。
 
         let pawn_0 = &self.bodies[self.pawn_handles[0]];
         let pawn_1 = &self.bodies[self.pawn_handles[1]];
 
-        let result = (
+        (
             [
                 (
                     [ pawn_0.translation().x,  pawn_0.translation().y], [ pawn_0.linvel().x,  pawn_0.linvel().y],
@@ -303,12 +311,6 @@ impl PhysicalQuoridor {
             ],
             rewards,
             [termination, termination]
-        );
-
-        for i in 0..2 {
-            self.can_fence_after[i] -= 1;
-        }
-
-        result
+        )
     }
 }

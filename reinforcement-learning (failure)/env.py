@@ -59,7 +59,10 @@ class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
                         *np.ravel(observation[4]).astype(np.float32),
 
                         normalize(observation[5], 0, 10),
-                        normalize(observation[6], 0, 10)
+                        normalize(observation[6], 0, 10),
+
+                        normalize(observation[7], 0, 10),
+                        normalize(observation[8], 0, 10)
                     ],
                     dtype=np.float32
                 ),
@@ -83,4 +86,4 @@ class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
 
     @lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return gymnasium.spaces.Box(0, 1, [2 + 2 + 2 + 2 + 8 * 8 * 2 + 1 + 1], dtype=np.float32)
+        return gymnasium.spaces.Box(0, 1, [2 + 2 + 2 + 2 + 8 * 8 * 2 + 1 + 1 + 1 + 1], dtype=np.float32)
