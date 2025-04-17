@@ -32,7 +32,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         return map(
             lambda values: dict(zip(self.agents, values)),
             (
-                repeat((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10), len(self.agents)),
+                repeat((np.array([-4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.array([4.0, 0.0], dtype=np.float32), np.array([0.0, 0.0], dtype=np.float32), np.zeros((8, 8, 2), dtype=np.int8), 10, 10, 0, 0), len(self.agents)),
                 repeat({}, len(self.agents))
             )
         )
