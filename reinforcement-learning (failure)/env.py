@@ -2,6 +2,7 @@ import gymnasium
 import numpy as np
 
 from functools import lru_cache
+from itertools import starmap
 from physical_quoridor import PhysicalQuoridorEnv
 
 
@@ -20,10 +21,10 @@ def normalize(value, min_value, max_value):
 class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
     @classmethod
     def convert_actions(cls, actions):
-        return dict(zip(
-            actions.keys(),
-            map(
-                lambda action: (
+        return dict(starmap(
+            lambda agent, action: (
+                agent,
+                (
                     convert_to_discrete(action[0], 2),
                     [
                         convert_to_box(action[1], -1, 1),
@@ -34,17 +35,17 @@ class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
                         convert_to_discrete(action[4], 8),
                         convert_to_discrete(action[5], 2),
                     )
-                ),
-                actions.values()
-            )
+                )
+            ),
+            actions.items()
         ))
 
     @classmethod
     def convert_observations(cls, observations):
-        return dict(zip(
-            observations.keys(),
-            map(
-                lambda observation: np.array(
+        return dict(starmap(
+            lambda agent, observation: (
+                agent,
+                np.array(
                     [
                         normalize(observation[0][0], -5, 5),
                         normalize(observation[0][1], -5, 5),
@@ -65,9 +66,9 @@ class PhysicalQuoridorEnv_(PhysicalQuoridorEnv):
                         normalize(observation[8], 0, 10)
                     ],
                     dtype=np.float32
-                ),
-                observations.values()
-            )
+                )
+            ),
+            observations.items()
         ))
 
     def reset(self, seed=None, options=None):
