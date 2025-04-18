@@ -106,4 +106,5 @@ def get_shortest_path_with_fence(observation, r, c, is_vertical):
     # フェンス設置状況を元に戻します。
     observation[4] = original_fences
 
+    # 最短経路をリターンします。ゴールに辿り着けなくするルール違反のフェンス設置の場合は、get_shortest_pathがNoneを返しているのでNoneになります。
     return shortest_path
