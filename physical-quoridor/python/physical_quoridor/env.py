@@ -8,6 +8,8 @@ from copy import copy
 from functools import lru_cache
 from funcy import repeat
 from itertools import starmap
+from random import Random
+
 from .physical_quoridor import PhysicalQuoridor
 
 
@@ -28,7 +30,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
     def reset(self, seed=None, options=None):
         self.agents = copy(self.possible_agents)
-        self.physical_quoridor = PhysicalQuoridor(seed if seed is not None else 1234)
+        self.physical_quoridor = PhysicalQuoridor(seed if seed is not None else Random().randrange(1, 1_000))
 
         return map(
             lambda values: dict(zip(self.agents, values)),

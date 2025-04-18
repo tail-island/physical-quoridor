@@ -194,7 +194,17 @@ impl PhysicalQuoridor {
     pub fn step(&mut self, actions: [Action; 2]) -> ([Observation; 2], [f32; 2], [bool; 2]) {
         // アクションを実行します。
 
-        for (i, action) in actions.iter().enumerate() {
+        let actions = {
+            let mut result = actions.iter().enumerate().collect::<Vec<_>>();
+
+            if Uniform::new(0.0, 1.0).unwrap().sample(&mut self.rng) < 0.5 {
+                result.reverse();
+            }
+
+            result
+        };
+
+        for (i, action) in actions {
             match action {
                 Action::AddForce(x, y) => self.add_force(i, *x, *y),
                 Action::SetFence(row, column, is_vertical) => self.set_fence(i, *row, *column, *is_vertical)

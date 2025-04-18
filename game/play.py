@@ -5,7 +5,7 @@ import sys
 
 from argparse import ArgumentParser
 from physical_quoridor import PhysicalQuoridorEnv
-from time import sleep
+from time import sleep, perf_counter
 
 
 TIMEOUT = 5
@@ -50,11 +50,12 @@ async def create_player(command, log_file):
 
 
 class Game:
-    def __init__(self, player_0, player_1, wait):
+    def __init__(self, player_0, player_1, seed, wait):
         self.players = {
             "player-0": player_0,
             "player-1": player_1
         }
+        self.seed = seed
         self.wait = wait
 
     async def terminate(self):
@@ -67,9 +68,11 @@ class Game:
     async def play(self):
         env = PhysicalQuoridorEnv(render_mode="human")
 
-        observations, _ = env.reset()
+        observations, _ = env.reset(seed=self.seed)
 
         while True:
+            step_starting_time = perf_counter()
+
             actions = {}
             for name, player in self.players.items():
                 try:
@@ -94,24 +97,26 @@ class Game:
                 return rewards
 
             if self.wait:
-                sleep(0.1)
+                sleep(max(step_starting_time + 0.1 - perf_counter(), 0))
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("player_0")
     parser.add_argument("player_1")
+    parser.add_argument("--seed", type=int)
     parser.add_argument("--wait", action="store_true")
 
     args = parser.parse_args()
 
-    async def main(player_0_command, player_1_command, wait):
+    async def main(player_0_command, player_1_command, seed, wait):
         result = await Game(
             await create_player(player_0_command, open("./player-0.log", mode="w")),
             await create_player(player_1_command, open("./player-1.log", mode="w")),
+            seed,
             wait
         ).play()
 
         print(f"{result['player-0']}\t{result['player-1']}")
 
-    asyncio.run(main(args.player_0, args.player_1, args.wait))
+    asyncio.run(main(args.player_0, args.player_1, args.seed, args.wait))

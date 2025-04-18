@@ -12,7 +12,7 @@ from time import sleep
 
 
 env = PhysicalQuoridorEnv(render_mode="human")
-observations, _ = env.reset()
+observations, _ = env.reset(seed=1234)
 
 for agent in range(1_000_000):
     match agent:

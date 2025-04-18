@@ -1,6 +1,29 @@
 import numpy as np
 
+from copy import deepcopy
 from heapq import heappop, heappush
+
+
+def get_enemy_observation(observation):
+    result = [None] * 9
+
+    result[0] = [-observation[2][0], -observation[2][1]]
+    result[1] = [-observation[3][0], -observation[3][1]]
+    result[2] = [-observation[0][0], -observation[0][1]]
+    result[3] = [-observation[1][0], -observation[1][1]]
+
+    result[4] = np.empty_like(observation[4])
+    for i in range(8):
+        for j in range(8):
+            for k in range(2):
+                result[4][i][j][k] = observation[4][7 - i][7 - j][k]
+
+    result[5] = observation[6]
+    result[6] = observation[5]
+    result[7] = observation[8]
+    result[8] = observation[7]
+
+    return result
 
 
 # 最短経路を求めます。
@@ -60,3 +83,26 @@ def get_shortest_path(observation):
 
     # ゴールできる経路が見つからなかった場合はNoneをリターンします。
     return None  # ゴールできないようなフェンス設置はルールで禁止されているので、必ずゴールできる経路があるはず。なので、Noneを返してもエラーにならないはず。
+
+
+# フェンスを設置した場合の最短経路を求めます。
+def get_shortest_path_with_fence(observation, r, c, is_vertical):
+    # 設置済みのフェンスと重なるフェンスは設置不可です。
+    if is_vertical:
+        if observation[4][r][c][0] or observation[4][r][c][1] or (r > 0 and observation[4][r - 1][c][1]) or (r < 7 and observation[4][r + 1][c][1]):
+            return None
+    else:
+        if observation[4][r][c][1] or observation[4][r][c][0] or (c > 0 and observation[4][r][c - 1][0]) or (c < 7 and observation[4][r][c + 1][0]):
+            return None
+
+    # 元に戻せるように、オリジナルのフェンス設置状況を退避しておきます。
+    original_fences = deepcopy(observation[4])
+
+    # フェンスを設置して、最短経路を求めます。
+    observation[4][r][c][is_vertical] = 1
+    shortest_path = get_shortest_path(observation)
+
+    # フェンス設置状況を元に戻します。
+    observation[4] = original_fences
+
+    return shortest_path
