@@ -20,15 +20,18 @@ async def main():
     with open("./game.log") as log_file:
         log_lines = list(map(lambda line: line.strip(), log_file.readlines()))
 
-    seed = int(first(filter(
-        lambda log_line: log_line.startswith("seed:"),
-        log_lines
-    )).split(":")[1])
+    seed = first(map(
+        lambda log_line: eval(log_line.split(":")[1]),
+        filter(
+            lambda log_line: log_line.startswith("seed:"),
+            log_lines
+        )
+    ))
 
     player_0_actions = list(map(
         lambda action_line: eval(action_line.split(":")[1]),
         filter(
-            lambda log_line: log_line.startswith("player-0:"),
+            lambda log_line: log_line.startswith("player-0 action:"),
             log_lines
         )
     ))
@@ -36,18 +39,18 @@ async def main():
     player_1_actions = list(map(
         lambda action_line: eval(action_line.split(":")[1]),
         filter(
-            lambda log_line: log_line.startswith("player-1:"),
+            lambda log_line: log_line.startswith("player-1 action:"),
             log_lines
         )
     ))
 
-    with open(os.devnull, mode="w") as log_file:
+    with open(os.devnull, mode="w") as null_file:
         result = await Game(
             LogPlayer(player_0_actions),
             LogPlayer(player_1_actions),
             seed,
             True,
-            log_file
+            null_file
         ).play()
 
     print(f"{result['player-0']}\t{result['player-1']}")

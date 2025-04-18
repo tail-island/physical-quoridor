@@ -84,7 +84,7 @@ class Game:
             for name, player in self.players.items():
                 try:
                     action = await player.get_action(observations[name])
-                    print(f"{name}: {action}", file=self.log_file)
+                    print(f"{name} action: {action}", file=self.log_file)
 
                     actions[name] = action
 
