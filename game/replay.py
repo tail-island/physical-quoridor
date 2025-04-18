@@ -1,14 +1,7 @@
 import asyncio
-import json
-import numpy as np
 import os
-import sys
 
-from argparse import ArgumentParser
 from funcy import first
-from physical_quoridor import PhysicalQuoridorEnv
-from random import Random
-from time import sleep, perf_counter
 from play import Game, Player
 
 
