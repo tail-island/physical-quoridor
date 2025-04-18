@@ -8,6 +8,7 @@ from utility import get_enemy_observation, get_shortest_path, get_shortest_path_
 
 class SamplePlayer(Player):
     def __init__(self, seed=None):
+        # ログはfile=sys.stderrをつけて出力します。ログは、gameディレクトリのplayer-x.logに出力されます。
         print("*** SamplePlayer ***", file=sys.stderr)
 
     def get_fence(self, observation):
