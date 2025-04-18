@@ -60,8 +60,8 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
 
             cv.rectangle(result, (center_x - width // 2, center_y - height // 2), (center_x + width // 2, center_y + height // 2), (255, 255, 255), -1)
 
-        [pawn_0_x, pawn_0_y] = observation[0]
-        [pawn_1_x, pawn_1_y] = observation[2]
+        pawn_0_x, pawn_0_y = observation[0]
+        pawn_1_x, pawn_1_y = observation[2]
 
         cv.circle(result, [int((pawn_0_x + 4.5) * 100), int((-pawn_0_y + 4.5) * 100)], 20, [255, 127, 127], -1)
         cv.circle(result, [int((pawn_1_x + 4.5) * 100), int((-pawn_1_y + 4.5) * 100)], 20, [127, 127, 255], -1)

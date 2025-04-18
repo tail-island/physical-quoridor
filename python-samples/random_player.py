@@ -18,13 +18,13 @@ class RandomPlayer(Player):
     def get_action(self, observation):
         match self.step:
             case 0:
-                action = (0, [1.0, 0.0], (0, 0, 0))
+                action = 0, [1.0, 0.0], (0, 0, 0)
             case 1:
-                action = (0, [1.0, 0.0], (0, 0, 0))
+                action = 0, [1.0, 0.0], (0, 0, 0)
             case 2:
-                action = (0, [1.0, 0.0], (0, 0, 0))
+                action = 0, [1.0, 0.0], (0, 0, 0)
             case 3:
-                action = (0, [1.0, 0.0], (0, 0, 0))
+                action = 0, [1.0, 0.0], (0, 0, 0)
             case _:
                 action = (
                     self.rng.randint(0, 1),

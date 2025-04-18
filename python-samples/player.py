@@ -20,7 +20,7 @@ class Player:
                     break
 
     def get_action(self, observation):
-        return (0, [0, 0], (0, 0, 0))
+        return 0, [0, 0], (0, 0, 0)
 
     def end_game(self):
         pass

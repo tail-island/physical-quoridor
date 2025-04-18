@@ -11,7 +11,8 @@ class SamplePlayer(Player):
         # ログはfile=sys.stderrをつけて出力します。ログは、gameディレクトリのplayer-x.logに出力されます。
         print("*** SamplePlayer ***", file=sys.stderr)
 
-    def get_fence(self, observation):
+    @classmethod
+    def _get_fence(cls, observation):
         # 敵の気分になるために、敵の観測結果を取得します。
         enemy_observation = get_enemy_observation(observation)
 
@@ -36,7 +37,8 @@ class SamplePlayer(Player):
         # 設置位置をリターンします。fenceには最初にNoneを代入したので、フェンスを設置しても最短経路が長くならない場合はNoneがリターンされます。
         return fence
 
-    def get_force(self, observation):
+    @classmethod
+    def _get_force(cls, observation):
         # 最短経路を取得します。
         shortest_path = get_shortest_path(observation)
 
@@ -59,7 +61,7 @@ class SamplePlayer(Player):
         # フェンスを設置可能なら……
         if observation[5] > 0 and observation[7] == 0:
             # 敵の最短経路がもっと長くなるフェンスの設置位置を取得します。
-            fence = self.get_fence(observation)
+            fence = self._get_fence(observation)
 
             # 敵の最短経路が長くなるフェンスの設置位置があるなら……
             if fence is not None:
@@ -67,7 +69,7 @@ class SamplePlayer(Player):
                 return 1, [0, 0], fence
 
         # 最短経路を進むように、駒に力を加えます。
-        return 0, self.get_force(observation), (0, 0, 0)
+        return 0, self._get_force(observation), (0, 0, 0)
 
 
 if __name__ == "__main__":
