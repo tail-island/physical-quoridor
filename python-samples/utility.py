@@ -4,6 +4,7 @@ from copy import deepcopy
 from heapq import heappop, heappush
 
 
+# 敵の観測結果を取得します。
 def get_enemy_observation(observation):
     result = [None] * 9
 
