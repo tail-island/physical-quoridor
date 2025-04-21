@@ -7,6 +7,7 @@ use rand_distr::*;
 
 const FRAME_RATE: i32 = 10;  // 物理エンジンのフレーム・レートである60の約数を設定してください。
 
+#[derive(Debug)]
 pub enum Action {
     AddForce(f32, f32),
     SetFence(i32, i32, bool)

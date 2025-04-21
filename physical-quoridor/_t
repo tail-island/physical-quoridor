@@ -1,3 +1,7 @@
 #!/bin/sh
 
-maturin develop --release && python ./_t.py
+export RUSTFLAGS=""
+maturin develop --release --features python  # && python .\_t.py
+
+export RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
+wasm-pack build --no-typescript --target nodejs --release --features javascript

@@ -7,9 +7,14 @@ edition = "2024"
 name = "physical_quoridor"
 crate-type = ["cdylib"]
 
+[features]
+python = ["dep:pyo3"]
+javascript = ["dep:wasm-bindgen", "getrandom/wasm_js"]
+
 [dependencies]
 getrandom = "0.3.2"
-pyo3 = "0.24.1"
+pyo3 = { version = "0.24.1", optional = true }
 rand = "0.9.0"
 rand_distr = "0.5.1"
 rapier2d = "0.23.1"
+wasm-bindgen = { version = "0.2.100", optional = true }
