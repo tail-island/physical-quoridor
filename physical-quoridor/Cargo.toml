@@ -13,7 +13,7 @@ javascript = ["dep:wasm-bindgen", "getrandom/wasm_js"]
 
 [dependencies]
 getrandom = "0.3.2"
-pyo3 = { version = "0.24.1", optional = true }
+pyo3 = { version = "0.24.1", features=["extension-module"], optional = true }
 rand = "0.9.0"
 rand_distr = "0.5.1"
 rapier2d = "0.23.1"
