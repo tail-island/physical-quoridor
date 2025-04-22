@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -5,20 +7,13 @@ pub struct PhysicalQuoridor {
     physical_quoridor: crate::PhysicalQuoridor
 }
 
-#[wasm_bindgen]
-pub struct Action {
-    action_type: i32,
-    force: Vec<f32>,
-    fence: Vec<i32>
-}
+#[derive(Tsify, Serialize, Deserialize)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct Action(i32, Vec<f32>, Vec<i32>);
 
-#[allow(dead_code)]
-#[wasm_bindgen]
-pub struct StepResult {
-    observations: Vec<crate::Observation>,
-    rewards: Vec<f32>,
-    terminations: Vec<bool>
-}
+#[derive(Tsify, Serialize, Deserialize)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct StepResult(Vec<crate::Observation>, Vec<f32>, Vec<bool>);
 
 #[wasm_bindgen]
 impl PhysicalQuoridor {
@@ -31,17 +26,13 @@ impl PhysicalQuoridor {
 
     pub fn step(&mut self, actions: Vec<Action>) -> StepResult {
         let result = self.physical_quoridor.step(actions.iter().map(|action|
-            match action.action_type {
-                0 => crate::Action::AddForce(action.force[0], action.force[1]),
-                1 => crate::Action::SetFence(action.fence[0], action.fence[1], action.fence[2] != 0),
+            match action.0 {
+                0 => crate::Action::AddForce(action.1[0], action.1[1]),
+                1 => crate::Action::SetFence(action.2[0], action.2[1], action.2[2] != 0),
                 _ => panic!("invalid action.")
             }
         ).collect::<Vec<_>>().try_into().unwrap());
 
-        StepResult {
-            observations: result.0.to_vec(),
-            rewards: result.1.to_vec(),
-            terminations: result.2.to_vec()
-        }
+        StepResult(result.0.to_vec(), result.1.to_vec(), result.2.to_vec())
     }
 }
