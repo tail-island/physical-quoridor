@@ -28,7 +28,7 @@ config = (
         policies={"policy_0", "policy_1"},
         policy_mapping_fn=lambda agent, episode, **kwargs: rng.choice(["policy_0", "policy_1"]),
         algorithm_config_overrides_per_module={
-            "policy_0": PPOConfig.overrides(gamma=0.995),
+            "policy_0": PPOConfig.overrides(gamma=0.95),
             "policy_1": PPOConfig.overrides(gamma=0.9)
         }
     )
