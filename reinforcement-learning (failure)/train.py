@@ -18,7 +18,7 @@ init()
 
 register_env(
     "physical_quoridor",
-    lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_()),
+    lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_(render_mode="human")),
 )
 
 config = (
