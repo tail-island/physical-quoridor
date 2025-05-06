@@ -7,6 +7,14 @@ import wasm from "vite-plugin-wasm";
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    target: 'esnext'
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext'
+    }
+  },
   plugins: [
     vue(),
     vueDevTools(),
