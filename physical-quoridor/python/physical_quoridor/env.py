@@ -41,19 +41,19 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         )
 
     def get_board_image(self, observation):
-        result = np.zeros([900, 900, 3], dtype=np.uint8)
+        result = np.zeros([450, 450, 3], dtype=np.uint8)
 
         for i in range(1, 8 + 1):
-            cv.line(result, [i * 100, 0], [i * 100, 899], [128, 128, 128], 1)
+            cv.line(result, [i * 50, 0], [i * 50, 449], [128, 128, 128], 1)
 
         for i in range(1, 8 + 1):
-            cv.line(result, [0, i * 100], [899, i * 100], [128, 128, 128], 1)
+            cv.line(result, [0, i * 50], [449, i * 50], [128, 128, 128], 1)
 
         for row, column, is_vertical in zip(*np.where(np.array(observation[4]))):
-            center_x = (column + 1) * 100
-            center_y = (row + 1) * 100
-            width = 220
-            height = 20
+            center_x = (column + 1) * 50
+            center_y = (row + 1) * 50
+            width = 110
+            height = 10
 
             if is_vertical:
                 width, height = height, width
@@ -63,8 +63,8 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
         pawn_0_x, pawn_0_y = observation[0]
         pawn_1_x, pawn_1_y = observation[2]
 
-        cv.circle(result, [int((pawn_0_x + 4.5) * 100), int((-pawn_0_y + 4.5) * 100)], 20, [255, 127, 127], -1)
-        cv.circle(result, [int((pawn_1_x + 4.5) * 100), int((-pawn_1_y + 4.5) * 100)], 20, [127, 127, 255], -1)
+        cv.circle(result, [int((pawn_0_x + 4.5) * 50), int((-pawn_0_y + 4.5) * 50)], 10, [255, 127, 127], -1)
+        cv.circle(result, [int((pawn_1_x + 4.5) * 50), int((-pawn_1_y + 4.5) * 50)], 10, [127, 127, 255], -1)
 
         result = cv.cvtColor(result, cv.COLOR_BGR2RGB)
 
@@ -80,7 +80,7 @@ class PhysicalQuoridorEnv(pettingzoo.ParallelEnv):
             pygame.init()
             pygame.display.set_caption("Physical Quoridor")
 
-            self.screen = pygame.display.set_mode((900, 900))
+            self.screen = pygame.display.set_mode((450, 450))
             self.surface = pygame.surfarray.make_surface(image)
 
         for event in pygame.event.get():
