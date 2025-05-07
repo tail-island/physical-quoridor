@@ -77,7 +77,7 @@ impl PhysicalQuoridor {
 
         let mut force = vector![x, y] * if player_index == 0 { 1.0 } else { -1.0 };  // 同じプログラムがplayer 1も担当できるように、力を反転します。
 
-        // 力は最大1に制限します。
+        // 力は最大0.5に制限します。
 
         if force.norm() > 0.5 {
             force *= 0.5 / force.norm();
@@ -96,7 +96,6 @@ impl PhysicalQuoridor {
 
         // 駒に力を加えます。
 
-        pawn.reset_forces(true);
         pawn.add_force(force, true);
     }
 
@@ -206,6 +205,9 @@ impl PhysicalQuoridor {
         };
 
         for (i, action) in actions {
+            // 駒に加えられる力をリセットします。
+            self.bodies.get_mut(self.pawn_handles[i]).unwrap().reset_forces(true);
+
             match action {
                 Action::AddForce(x, y) => self.add_force(i, *x, *y),
                 Action::SetFence(row, column, is_vertical) => self.set_fence(i, *row, *column, *is_vertical)

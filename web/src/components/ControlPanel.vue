@@ -40,10 +40,12 @@ onMounted(() => {
     </select>
     &nbsp;
     <button id="new-game-button" @click="newGame">New Game</button>
-    &nbsp;[
+  </p>
+  <p>
+    [
     <input id="action-type" size="1" value="0">
     ,&nbsp;[
-    <input id="force-x" size="5" value="1.0">
+    <input id="force-x" size="5" value="0.5">
     ,&nbsp;
     <input id="force-y" size="5" value="0.0">
     ],&nbsp;[

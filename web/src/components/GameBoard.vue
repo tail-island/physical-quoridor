@@ -6,13 +6,9 @@ import { usePhysicalQuoridorStore } from '@/stores/PhysicalQuoridorStore'
 const store = usePhysicalQuoridorStore()
 
 onMounted(() => {
-  const context = document.getElementById('canvas').getContext('2d')
-
-  context.fillStyle = '#000'
-
-  context.fillRect(0, 0, 450, 450)
-
   watch(() => store.observations, observations => {
+    const context = document.getElementById('canvas').getContext('2d')
+
     context.fillStyle = '#000'
 
     context.fillRect(0, 0, 450, 450)

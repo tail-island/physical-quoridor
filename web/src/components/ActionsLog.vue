@@ -29,9 +29,8 @@ onMounted(() => {
 .actions-log {
   border: 1px solid #808080;
   font-size: 12px;
-  height: 450px;
-  margin-left: 10px;
-  width: 390px;
+  height: 200px;
+  width: 450px;
   overflow-y: scroll;
 }
 

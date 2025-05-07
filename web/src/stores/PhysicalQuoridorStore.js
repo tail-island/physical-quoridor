@@ -28,6 +28,8 @@ export const usePhysicalQuoridorStore = defineStore('gameState', () => {
     observations.value = repeat(initialObservation, 2)
     rewards.value = [0.0, 0.0]
     terminations.value = [false, false]
+
+    actionsLog.value = []
   }
 
   function step (action) {

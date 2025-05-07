@@ -6,11 +6,11 @@ import GameBoard from '@/components/GameBoard.vue'
 
 <template>
   <main>
-    <div class="game">
-      <GameBoard class="game-item" />
-      <ActionsLog class="game-item" />
+    <div>
+      <GameBoard />
+      <ControlPanel />
+      <ActionsLog />
     </div>
-    <ControlPanel />
   </main>
 </template>
 
@@ -18,11 +18,5 @@ import GameBoard from '@/components/GameBoard.vue'
 body {
   font-family: Arial;
   font-size: 14px;
-}
-
-.game {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
 }
 </style>
