@@ -93,7 +93,7 @@ AIの標準エラー出力はplayer-0.logとlayer-1.logに保存されます。�
 
 .\sample-playersにPythonで作成したサンプルAIを置きましたので、プログラミング時の参考にしてみてください。
 
-* random_player.py: ランダムに移動もしくはフェンスを設置します。
-* shortest_path_player.py: 盤面を9×9のマスとみなし、上下左右のマスへの移動に限定した場合の最短経路を求め、最短経路を進むように駒に力を加えます。慣性を考慮していないので、盤面から落ちて負けることが多いです。
-* strict_shortest_path_player.py: shortest_path_player.pyの発展形で、盤面から落ちないようにゆっくり最短経路を進みます。移動速度が遅くてイライラします。
-* sample_player.py: strict_shortest_path_player.pyに加えて、敵の最短経路を長くする位置にフェンスを設置します。同じ盤面を自分も進むことを考えていないため、自分を苦しめるフェンス設置になることが多いです。
+* random_player.py: ランダムに移動もしくはフェンスを設置します。何も考えていません。
+* shortest_path_player.py: 盤面を9×9のマスとみなし、上下左右のマスへの移動に限定した場合の最短経路を求め、その経路を進むように駒に力を加えます。慣性を考慮していないので、よく盤面から落ちて負けます。
+* strict_shortest_path_player.py: shortest_path_player.pyの発展形で、盤面から落ちないようにゆっくり最短経路を進みます。移動速度が遅くて`--wait`をつけるとイライラします。
+* sample_player.py: strict_shortest_path_player.pyに加えて、敵の最短経路を長くする位置にフェンスを設置します。同じ盤面を自分も進むことを考えていないため、自分を苦しめるフェンス設置になることが多くて泣きそうです。
