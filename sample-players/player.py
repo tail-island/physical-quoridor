@@ -9,6 +9,7 @@ class Player:
 
             match request["command"]:
                 case "get_action":
+                    print("*", end="", file=sys.stderr)
                     action = self.get_action(request["observation"])
                     print(json.dumps(action))
                     sys.stdout.flush()
