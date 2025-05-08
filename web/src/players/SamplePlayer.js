@@ -127,7 +127,7 @@ export class SamplePlayer {
     const shortestPath = getShortestPath(observation)
 
     if (shortestPath.length === 1) {
-      return [1, 0]
+      return [0.5, 0]
     }
 
     const [row, column] = shortestPath[1]

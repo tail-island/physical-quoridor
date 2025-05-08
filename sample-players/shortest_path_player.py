@@ -12,7 +12,7 @@ class ShortestPathPlayer(Player):
         shortest_path = get_shortest_path(observation)
 
         if len(shortest_path) == 1:
-            return 0, [1, 0], (0, 0, 0)
+            return 0, [0.5, 0], (0, 0, 0)
 
         r, c = shortest_path[1]
         px, py = observation[0]

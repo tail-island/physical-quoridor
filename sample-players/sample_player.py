@@ -45,7 +45,7 @@ class SamplePlayer(Player):
         # ゴールラインのセルにいるなら……
         if len(shortest_path) == 1:
             # まっすぐゴールに進みます。
-            return [1, 0]
+            return [0.5, 0]
 
         # 次に進むべきセルを取得します。
         row, column = shortest_path[1]
