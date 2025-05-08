@@ -12,7 +12,7 @@ from time import sleep
 def get_action(env, observation, rl_module):
     return np.clip(
         rl_module.get_inference_action_dist_cls().from_logits(
-            rl_module.forward_inference({"obs": torch.from_numpy(observation).unsqueeze(0)})["action_dist_inputs"]
+            (rl_module.forward_inference({"obs": torch.from_numpy(observation).unsqueeze(0)})["action_dist_inputs"] + 1) / 2  # rayのコードを追いかけてみたら、デフォルトの設定だとなんかいろいろ経由して./ray/utils/spaces/space_utils.pyのunsquash_action()で-1から1に変換してた。。。
         ).to_deterministic().sample()[0].detach().numpy(),
         a_min=env.action_space("player-0").low[0],
         a_max=env.action_space("player-0").high[0],
