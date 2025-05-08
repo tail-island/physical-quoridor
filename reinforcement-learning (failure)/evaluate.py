@@ -32,7 +32,7 @@ rl_modules = {
 }
 
 env = PhysicalQuoridorEnv_(render_mode="human")
-observations, infos = env.reset()
+observations, infos = env.reset(seed=1234)
 
 while True:
     actions = dict(zip(
