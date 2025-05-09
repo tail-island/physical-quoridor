@@ -19,7 +19,7 @@ init()
 register_env(
     "physical_quoridor",
     lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_()),
-    # lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_(render_mode="human")),  # こちらにすると、学習中のプレイが見えます。
+    # lambda _: ParallelPettingZooEnv(PhysicalQuoridorEnv_(render_mode="human")),  # こちらにすると、学習中のプレイが見えて面白いです。
 )
 
 config = (
