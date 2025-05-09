@@ -23,17 +23,17 @@ register_env(
 )
 
 config = (
-    PPOConfig().
-    environment("physical_quoridor").
-    multi_agent(
+    PPOConfig()
+    .environment("physical_quoridor")
+    .multi_agent(
         policies={"policy_0", "policy_1"},
         policy_mapping_fn=lambda agent, episode, **kwargs: rng.choice(["policy_0", "policy_1"]),
         algorithm_config_overrides_per_module={
             "policy_0": PPOConfig.overrides(gamma=0.95),
             "policy_1": PPOConfig.overrides(gamma=0.9)
         }
-    ).
-    rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
+    )
+    .rl_module(rl_module_spec=MultiRLModuleSpec(rl_module_specs={
         "policy_0": RLModuleSpec(
             model_config=DefaultModelConfig(
                 fcnet_hiddens=[512, 512, 512, 512],
@@ -46,8 +46,8 @@ config = (
                 fcnet_activation="relu"
             )
         )
-    })).
-    env_runners(num_env_runners=8)
+    }))
+    .env_runners(num_env_runners=8)
 )
 
 algo = config.build_algo()
