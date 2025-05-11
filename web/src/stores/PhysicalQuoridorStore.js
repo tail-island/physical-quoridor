@@ -2,12 +2,14 @@ import { PhysicalQuoridor } from 'physical-quoridor'
 import { defineStore } from 'pinia'
 import { append, map, range, repeat } from 'ramda'
 import { ref } from 'vue'
+import { DoNothingPlayer } from '@/players/DoNothingPlayer'
 import { RandomPlayer } from '@/players/RandomPlayer'
 import { SamplePlayer } from '@/players/SamplePlayer'
 
 const initialObservation = [[-4.0, 0.0], [0.0, 0.0], [4.0, 0.0], [0.0, 0.0], map(i => map(j => map(k => 0, range(0, 2)), range(0, 8)), range(0, 8)), 10, 10, 0, 0]
 
 const enemies = {
+  doNothingPlayer: new DoNothingPlayer(),
   randomPlayer: new RandomPlayer(),
   samplePlayer: new SamplePlayer()
 }

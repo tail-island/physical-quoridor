@@ -35,6 +35,7 @@ onMounted(() => {
 <template>
   <p>
     <select id="enemy-name">
+      <option value="doNothingPlayer">DoNothingPlayer</option>,
       <option value="randomPlayer">RandomPlayer</option>,
       <option value="samplePlayer" selected>SamplePlayer</option>
     </select>
