@@ -1,6 +1,7 @@
+dm-tree==0.1.9
 funcy==2.0
 gymnasium==1.0.0
 numpy==2.2.5
 pyarrow==20.0.0
-ray==2.46.0
+ray[all]==2.46.0
 torch==2.7.0
